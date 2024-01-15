@@ -1,0 +1,142 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <!-- Leaflet library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="{% static 'trail/map.js' %}"></script>
+    <script src="{% static 'trail/trail.js' %}"></script>
+    <script src="{% static 'trail/save.js' %}"></script>
+    <script src="{% static 'trail/photo.js' %}"></script>
+{% endblock %}
+
+{% block pagetitle %}
+{% csrf_token %}
+{{ trail.id|json_script:"trail_id" }}
+{{ request.user.id|json_script:"request_user_id" }}
+<div class="row">
+    <div class="col trail-title" id="{{ trail.id }}">
+        <div class="row">
+            <div class="col-md-8 mb-1"><b id="trail-title">{{ trail.trail_name }}</b>
+            <div id="upload-time">Uploaded on {{ trail.upload_time|date:"d M Y" }}</div></div>
+
+            {% if request.user  ==  trail.user %}
+                <div class="row col-md-4">
+                <div class="col-12 col-md-9 trail-title-edit mb-1 mt-1"><a href="{% url 'edit' trail.id %}">Edit</a></div>
+                <div class="col-12 col-md-3 trail-title-edit mb-1 mt-1"><a href="{% url 'delete' trail.id %}" class="confirm-delete">Delete</a></div>
+                </div>
+            {% else %}
+                <div class="col-12 mb-1">
+                    <a href="{% url 'view_profile' trail.user.id %}">
+                        {% if trail.user.profile_photo_thumb %}
+                        <img src="{{ trail.user.profile_photo_thumb.url }}" id="trail-owner">
+                        {% else %}
+                        <img src="{% static 'trail/default_profile.png' %}" id="trail-owner">
+                        {% endif %}
+                        {{ trail.user }}
+                    </a></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if request.user.is_authenticated %}
+    {% if trail_saved %}
+        {{ trail_saved.id|json_script:"trail_saved_id" }}
+            <button type="button" id="save-trail-button" value="{{ trail_user.id }}" class="btn btn-outline-primary btn-sm mt-1">Saved!</button>
+        {% else %}
+            <button type="button" id="save-trail-button" value="{{ trail_user.id }}" class="btn btn-primary btn-sm mt-1">Save the trail</button>
+    {% endif %}
+{% endif %}
+{% endblock %}  
+
+{% block body %}
+<div class="row" id="trail-description-container">
+    {% if trail.description %}
+        <div class="col-lg-6"><div id="trail-description">{{ trail.description|linebreaksbr }}</div></div>
+    {% elif request.user == trail.user %}
+        <div class="col-lg-6"><div id="trail-description"><a href="{% url 'edit' trail.id %}">Add some description</a></div></div>
+    {% else %}
+        <div></div>
+    {% endif %}
+    <div class="col row" id="trail-data-container">
+        <div class="col">
+            <table class="trail-data">
+                <tr><td class="trail-data-title">Distance</td><td class="trail-data-data-l">{{ trail.distance }} km</td></tr>
+                <tr><td class="trail-data-title">Start time</td><td class="trail-data-data-l">{{ trail.start_time|date:"d M Y H:i:s" }}</td></tr>
+                <tr><td class="trail-data-title">End time</td><td class="trail-data-data-l">{{ trail.end_time|date:"d M Y H:i:s" }}</td></tr>
+                <tr><td class="trail-data-title">Duration</td><td class="trail-data-data-l">{{ trail.duration|date:"H:i:s" }}</td></tr>
+                <tr><td class="trail-data-title">Moving time</td><td class="trail-data-data-l">{{ trail.moving_time|date:"H:i:s" }}</td></tr>
+                <tr><td class="trail-data-title">Stop time</td><td class="trail-data-data-l">{{ trail.stop_time|date:"H:i:s" }}</td></tr>
+                <tr><td class="trail-data-title">Average speed</td><td class="trail-data-data-l">{{ trail.average_speed }} km/hr</td></tr>
+            </table>
+        </div>
+        <div class="col">
+            <table class="trail-data">
+                <tr><td class="trail-data-title">Ascent</td><td class="trail-data-data-r">{{ trail.sum_uphill|floatformat }} m</td></tr>
+                <tr><td class="trail-data-title">Descent</td><td class="trail-data-data-r">{{ trail.sum_downhill|floatformat }} m</td></tr>
+                <tr><td class="trail-data-title">Start altitude</td><td class="trail-data-data-r">{{ trail.start_altitude|floatformat }} m</td></tr>
+                <tr><td class="trail-data-title">End altitude</td><td class="trail-data-data-r">{{ trail.end_altitude|floatformat }} m</td></tr>
+                <tr><td class="trail-data-title">Highest altitude</td><td class="trail-data-data-r">{{ trail.highest_altitude|floatformat }} m</td></tr>
+                <tr><td class="trail-data-title">Lowest altitude</td><td class="trail-data-data-r">{{ trail.lowest_altitude|floatformat }} m</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="trail-container">
+    <div id="trailmap"></div>
+</div>
+<div id="elevation-container">
+    <canvas id="elevation-profile"></canvas>
+</div>
+
+{% if photos %}
+    <div class="carousel-photos-container">
+        <img src="{{ photos.0.photo_file.url }}" class="d-block" id="full-size-photo" alt="Photo for trail {{ trail.trail_name }}">
+    </div>
+    <div id="carousel" class="carousel carousel-dark slide">
+        <div class="carousel-inner">
+            {% if photos|length > 1 %}
+                {% for photo in photos %}
+                    {% if forloop.counter0|divisibleby:4 %}
+                    <div class="carousel-item{% if forloop.counter0 == 0 %} active {% endif %}">
+                        <div class="d-flex w-100 justify-content-center">
+                    {% endif %}
+                            <div><img class="rounded thumbnail-img" src="{{ photo.thumbnail_file.url }}" id="{{ photo.id }}" alt="Photo for trail {{ trail.trail_name }}"/></div>
+                    {% if forloop.counter0|add:"1"|divisibleby:4 or forloop.last %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% if photos|length > 4 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% elif request.user == trail.user%}
+<div class="d-flex justify-content-center">
+    <div>
+        <a href="{% url 'edit' trail.id %}"><img id="no-photos" src="{% static 'trail/photo-camera.png' %}">
+        <div>Add some photos</div>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock%}
+

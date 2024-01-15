@@ -1,0 +1,42 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'trail/photo.js' %}"></script>
+{% endblock %}
+
+{% block pagetitle %}
+<h5><b>Edit your trail</b></h5>
+{% endblock %}  
+
+{% block body %}
+<div>
+    <form action="{% url 'edit' trail.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- 改成detailview? -->
+        <div class="form-check form-switch mb-3">
+            <label for="id_public">Open to public</label>
+            <input type="checkbox" name="public" role="switch" class="form-check-input" id="id_public" checked="">
+        </div>
+        <div class="mb-5">{{ name_form }}</div>
+        <div class="mb-5">{{ description_form }}</div>
+        <div class="mb-5">
+            <label for="photo_files">Add some photos:</label>
+            <input type="file" accept="image/*" id="photo_files" name="photo_files" multiple="multiple" class="form-control">
+        </div>
+
+        {% if photos %}
+        <div>Select photos to delete</div>
+        <div class="d-flex flex-wrap mb-1">
+        {% for photo in photos %}
+            <div class="rounded"><img class="rounded edit-thumbnail-img" src="{{ photo.thumbnail_file.url }}" id="{{ photo.id }}" alt="Photo for trail {{ trail.trail_name }}"/></div>
+        {% endfor %}
+        </div>
+        <div class="mb-5"><div id="delete-photo-btn" class="btn btn-danger">Delete photos</div></div>
+        {% endif %}
+
+        <input type="submit" value="Save" class="btn btn-outline-primary">
+    </form>
+</div>
+{% endblock%}
+

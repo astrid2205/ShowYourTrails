@@ -1,0 +1,24 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block pagetitle %}
+<div class="form-register w-100 m-auto">
+<h5><b>Register</b></h5>
+</div>
+{% endblock%}
+
+{% block body %}
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-register w-100 m-auto">
+            
+            {{ form.as_p }}
+            <div class="d-flex justify-content-center">
+                <input class="btn btn-primary w-75 mt-3 py-2" type="submit" value="Register" />
+            </div>
+        </div>
+    </form>
+    <script>
+        document.querySelector('body').setAttribute('id', 'background-required')
+    </script>
+{% endblock%}

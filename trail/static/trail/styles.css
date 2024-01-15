@@ -1,0 +1,344 @@
+.carousel-photos-container {
+    height: 80vh;
+}
+
+.thumbnail-img, .edit-thumbnail-img {
+    height: 100px;
+    margin: 0.5rem;
+}
+
+#full-size-photo {
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+#no-photos {
+    padding: 0.5rem;
+    height: 18vh;
+    display: block;
+    margin: auto;
+}
+
+.navbar {
+    padding-left: 15px ;
+    padding-right: 10px ;
+    background-color: #e3f2fd;
+}
+
+.nav-link {
+    padding: 0;
+}
+
+#trail-title {
+    font-size: 1.3rem;
+    text-align: left;
+}
+
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+body {
+    margin-bottom: 80px;
+    font-family: 'Roboto', serif;
+    font-size: medium;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2rem;
+    color:#5c6268;
+}
+
+a {
+    text-decoration: none;
+}
+
+table {
+    text-align: center;
+}
+
+.table-title{
+    text-align: left;
+    font-size: 1rem;
+}
+
+.table-data {
+    font-size: 0.9rem;
+}
+
+.messages {
+    margin: 1rem 0 1rem 0
+}
+
+#page-title-container {
+    padding: 1.2rem calc(var(--bs-gutter-x)*.5) 0.5rem 0;
+}
+
+.trail-title-edit {
+    text-align: end;
+    padding-right: 0;
+}
+
+#trail-description {
+    height: 100%;
+    min-height: 6rem;
+    padding: calc(var(--bs-gutter-x)*0.5);
+}
+
+#trail-description-container {
+    background: #eef9f4;
+    margin-right: 0;
+    margin-left: 0;
+    border-radius: 5px;
+}
+
+.trail-data {
+    text-align: left;
+
+}
+
+#trail-data-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    height: fit-content;
+}
+
+.trail-data-title {
+    min-width: 8rem;
+    color:#686868;
+}
+
+.trail-data-data-l {
+    min-width: 10rem;
+}
+
+.trail-data-data-r {
+    min-width: 4rem;
+}
+
+#trailmap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    left: 0.0%;
+    top: 0.0%;
+    border-radius: 5px;
+}
+
+#trail-container {
+    width: 100%;
+    max-height: 50vw;
+    height: 60vh;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+#profile-trail-container {
+    width: 100%;
+    max-height: 50vw;
+    height: 95vh;
+    padding: 0.5rem 0 0.5rem 0;
+}
+
+@media (max-width: 992px) {
+    #table-explore .table-ascent, #table-explore .table-descent {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    #trail-container, #profile-trail-container {
+        max-height: 100vw;
+        height: 80vw;
+    }
+
+    .trail-title-edit {
+        text-align: left;
+    }
+
+    .carousel-photos-container {
+        width: 100%;
+        max-height: 75vw;
+    }
+
+    .thumbnail-img {
+        height: 12vw;
+        margin: 0.2rem;
+    }
+
+    .table-delete, .table-edit, .table-ascent, .table-descent {
+        display: none;
+    }
+
+    #table-explore .table-distance, #table-explore .table-duration {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .table-distance, .table-duration, #table-explore .table-date {
+        display: none;
+    }
+
+    table {
+        table-layout: fixed;
+    }
+
+    .table-title {
+        word-wrap: break-word;
+    }
+
+    .table-uploader {
+        text-align: left;
+    }
+
+    #profile-photo-nav {
+        display: none;
+    }
+
+    .nav-link {
+        padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    }
+}
+
+.table-date {
+    text-wrap: nowrap;
+}
+
+.table-data .table-uploader {
+    white-space: nowrap;
+    text-align: left;
+}
+
+#table-explore #trail-owner {
+    height: 30px;
+}
+
+.table {
+    vertical-align: middle;
+}
+
+#table-explore td {
+    font-size: 0.95rem;
+}
+
+#elevation-container {
+    padding-bottom: 1rem
+}
+
+#upload-time {
+    color: gray;
+    font-size: 1rem;
+}
+
+.unfollow:hover span {
+    display: none
+}
+
+.unfollow:hover:before {
+    content: "Unfollow"
+}
+
+.form-login {
+    max-width: 330px;
+    padding: 5rem 1rem;
+}
+
+.form-register {
+    max-width: 500px;
+}
+
+.helptext, .form-register ul {
+    font-size: 0.8rem;
+    color:gray;
+}
+
+.form-register p, .form-register h5{
+    margin-bottom: 0.2rem;
+}
+
+#profile-stats table {
+    text-align: left;
+}
+
+#profile-stats td {
+    width: 55%;
+    padding: 0.15rem 0.25rem;
+    font-size: 0.9rem;
+}
+
+#profile_photo {
+    width: 350px;
+    max-width: 100%;
+    margin: auto;
+}
+
+#change_profile_photo {
+    display: none;
+}
+
+#profile-photo-nav {
+    height: 45px;
+    padding-right: 4px;
+}
+
+#trail-owner {
+    height: 40px;
+    padding-right: 4px;
+}
+
+#profile-owner-photo {
+    height: 160px;
+    margin: auto;
+    margin-top: 0.5rem;
+}
+
+.user-name {
+    font-size: 1.25rem;
+    padding: 0.7rem;
+}
+
+#profile-owner {
+    padding: 0.25rem 0 0.25rem 0;
+    text-align: center;
+}
+
+#follow-user-button {
+    width: fit-content;
+    margin: auto;
+}
+
+#github-mark {
+    height: 1rem;
+}
+
+#background-required {
+    background-image: url("index-background.jpg");
+    background-blend-mode: screen;
+    background-color: #c8d1db;
+    background-size: cover ;
+}
+
+.followers-container {
+    height: 100px;
+}
+
+.followers {
+    padding: 25px;
+    background-color: #f3faff;
+}
+
+#logo {
+    height: 32px;
+}
+
+#trails-explore-hr, .trails-explore-link {
+    margin: 0.5rem 0;
+}

@@ -1,0 +1,27 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block pagetitle %}
+<h5><b>{{ trail_user }}'s followers</b></h5>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    {% if followers %}
+        {% for f in followers %}
+        <div class="followers-container col-md-4 col-sm-6">
+            <div class="followers rounded"><a href="{% url 'view_profile' f.user.id %}">
+            {% if f.user.profile_photo_thumb %}
+            <img src="{{ f.user.profile_photo_thumb.url }}" id="trail-owner">
+            {% else %}
+            <img src="{% static 'trail/default_profile.png' %}" id="trail-owner">
+            {% endif %}
+            {{ f.user }}
+            </a></div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>{{ trail_user }} does not have any followers.</p>
+    {% endif %}
+</div>
+{% endblock %}

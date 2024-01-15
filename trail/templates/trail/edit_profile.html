@@ -1,0 +1,41 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'trail/user.js' %}"></script>
+{% endblock %}
+
+{% block pagetitle %}
+<h5><b>Edit your profile</b></h5>
+{% endblock%}
+
+{% block body %}
+<div class="form-register w-75 m-auto mt-3 mb-5">
+    <div class="d-flex justify-content-center">
+    {% if request.user.profile_photo %}
+    <img class="" src="{{ request.user.profile_photo.url }}" id="profile_photo" alt="Profile photo of {{ request.user }}"/>
+    {% else %}
+    <img id="no-profile-photo" src="{% static 'trail/default_profile.png' %}">
+    {% endif %}
+    </div>
+    <div class="d-flex justify-content-center">
+    <form action="{% url 'edit_profile' %}" method="post" id="profile_photo_form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="change_profile_photo" class="btn btn-primary mt-3">Change profile photo</label>
+        <input type="file" accept="image/*" id="change_profile_photo" name="profile_photo" title=" ">
+    </form>
+    </div>
+</div>
+
+<form action="{% url 'edit_profile' %}" method="post">
+    {% csrf_token %}
+    <div class="form-register w-75 m-auto">
+        
+        <h6 class="mb-3 mt-5"><b>Change password</b></h6>
+        {{ form.as_p }}
+        <div class="d-flex justify-content-center">
+            <input class="btn btn-primary mt-3 py-2" type="submit" value="Change password" />
+        </div>
+    </div>
+</form>
+{% endblock%}

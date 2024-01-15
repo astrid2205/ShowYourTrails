@@ -1,0 +1,44 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'trail/trail.js' %}"></script>
+{% endblock %}
+
+{% block pagetitle %}
+<h5><b>My trails</b></h5>
+{% endblock %}  
+
+{% block body %}
+    {% if all_trails %}
+    <p>{{ all_trails|length }} trails</p>
+    <div>
+        <table class="table table-hover">
+        <tr>
+            <th class="table-title" scope="col">Title</th>
+            <th class="table-date"scope="col">Date</th>
+            <th class="table-distance"scope="col">Distance (km)</th>
+            <th class="table-duration"scope="col">Duration</th>
+            <th class="table-ascent"scope="col">Ascent (m)</th>
+            <th class="table-descent"scope="col">Descent (m)</th>
+            <th class="table-edit"></th>
+            <th class="table-delete"></th>
+        </tr>
+        {% for trail in all_trails %}
+        <tr class="table-data">
+            <td class="table-title"><a href="{% url 'trail' trail.id %}">{{ trail.trail_name }}</a></td>
+            <td class="table-date">{{ trail.start_time|date:"d M Y" }}</td>
+            <td class="table-distance">{{ trail.distance }}</td>
+            <td class="table-duration">{{ trail.duration|date:"H:i:s" }}</td>
+            <td class="table-ascent">{{ trail.sum_uphill|floatformat }}</td>
+            <td class="table-descent">{{ trail.sum_downhill|floatformat }}</td>
+            <td class="table-edit"><a href="{% url 'edit' trail.id %}">Edit</a></td>
+            <td class="table-delete"><a href="{% url 'delete' trail.id %}" class="confirm-delete" id="{{ trail.trail_name }}">Delete</a></td>
+        </tr>
+        {% endfor%}
+        </table>
+    </div>
+    {% else %}
+        <p><a href="{% url 'upload' %}">Upload your first trail!</a></p>
+    {% endif %}
+{% endblock%}

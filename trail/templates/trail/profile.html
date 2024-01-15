@@ -1,0 +1,134 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <!-- Leaflet library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    <script src="{% static 'trail/profile.js' %}"></script>
+{% endblock %}
+
+{% block pagetitle %}
+    
+{% endblock %}  
+
+{% block body %}
+<div>
+    <div class="row">
+        <div class="col-md-3">
+            <div id="owner" class="mb-4 row justify-content-md-center">
+                <div class="col d-flex">
+                {% if trail_user.profile_photo_thumb %}
+                <img src="{{ trail_user.profile_photo.url }}" id="profile-owner-photo">
+                {% else %}
+                <img src="{% static 'trail/default_profile.png' %}" id="profile-owner-photo">
+                {% endif %}
+                </div>
+                <b class="user-name" id="profile-owner">{{ trail_user.username }}</b>
+            
+            {% csrf_token %}
+            {{ request.user.id|json_script:"request_user_id" }}
+            {{ trail_user.id|json_script:"trail_user_id" }}
+            {{ user_followed.id|json_script:"user_followed_id" }}
+            {% if user.is_authenticated and request.user != trail_user %}
+                {% if user_followed %}
+                <button type="button" id="follow-user-button" value="{{ trail_user.id }}" class="btn btn-outline-primary unfollow"><span>Followed!</span></button>
+                {% else %}
+                <button type="button" id="follow-user-button" value="{{ trail_user.id }}" class="btn btn-primary"><span>Follow</span></button>
+                {% endif %}
+            {% endif %}
+            </div>
+            <div id="profile-stats">
+                <table class="table table-sm">
+                    <tr>
+                        <th scope="col">Following</th>
+                        <th scope="col">Followers</th>
+                    </tr>
+                    <tr>
+                        <td><a href="{% url 'following' trail_user.id %}">{{ following_num }}</a></td>
+                        <td><a href="{% url 'followers' trail_user.id %}">{{ followers_num }}</a></td>
+            
+                    </tr>
+                </table>
+                <div>
+                    <table class="table table-sm">
+                        <tr><th scope="col"><b>This month</b></th><th scope="col"></th></tr>
+                        <tr><td>Trails</td><td>{{ stats.month.count }}</td></tr>
+                        <tr><td>Distance</td><td>{{ stats.month.sum_dist|floatformat }} km</td></tr>
+                        <tr><td>Elevation gain</td><td>{{ stats.month.sum_uphill|floatformat }} m</td></tr>
+                        <tr class="md-3"><td>Time</td><td>{{ stats.month.sum_dur.hours }} h {{ stats.month.sum_dur.mins }} m</td></tr>
+                    </table>
+                    <table class="table table-sm">
+                        <tr><th>This year</th><th scope="col"></th></tr>
+                        <tr><td>Trails</td><td>{{ stats.year.count }}</td></tr>
+                        <tr><td>Distance</td><td>{{ stats.year.sum_dist|floatformat }} km</td></tr>
+                        <tr><td>Elevation gain</td><td>{{ stats.year.sum_uphill|floatformat }} m</td></tr>
+                        <tr><td>Time</td><td>{{ stats.year.sum_dur.hours }} h {{ stats.year.sum_dur.mins }} m</td></tr>
+                    </table>
+                    <table class="table table-sm">
+                        <tr><th>All time</th><th scope="col"></th></tr>
+                        <tr><td>Trails</td><td>{{ stats.all.count }}</td></tr>
+                        <tr><td>Distance</td><td>{{ stats.all.sum_dist|floatformat }} km</td></tr>
+                        <tr><td>Elevation gain</td><td>{{ stats.all.sum_uphill|floatformat }} m</td></tr>
+                        <tr><td>Time</td><td>{{ stats.all.sum_dur.hours }} h {{ stats.all.sum_dur.mins }} m</td></tr>
+                        {% if stats.all.count %}
+                        <tr><td>Biggest climb</td><td><a href="{% url 'trail' stats.all.biggest_climb.id %}">{{ stats.all.biggest_climb.elev }} m</a></td></tr>
+                        <tr><td>Longest trail</td><td><a href="{% url 'trail' stats.all.longest_trail.id %}">{{ stats.all.longest_trail.dist }} km</a></td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="profile-trail-container">
+                <div id="trailmap"></div>
+            </div>
+        <!-- User visiting his/her own profile -->
+        {% if request.user == trail_user %}
+        <div id="all_trails" class="mt-2">
+            <div>Select the trails you want to set to public on your profile.</div>
+            {% for trail in all_trails %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="{{ trail.id }}" role="switch" {% if trail.public %}checked{% endif %}>
+                    <a href="{% url 'trail' trail.id %}">{{ trail.trail_name }}</a>
+                </div>
+            {% empty %}
+                <div>You don't have any trails yet. </div>
+                <div><a href="{% url 'upload' %}">Upload your first trail.</a></div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div id="profile-trail-table">
+            {% if all_trails %}
+            <h5 class="mb-1 mt-2 ms-1"><b>{{ trail_user.username }}'s trails</b></h5>
+            <table class="table table-hover">
+            <tr>
+                <th class="table-title" scope="col">Title</th>
+                <th class="table-date"scope="col">Date</th>
+                <th class="table-distance"scope="col">Distance (km)</th>
+                <th class="table-ascent"scope="col">Ascent (m)</th>
+                <th class="table-duration"scope="col">Duration</th>
+            </tr>
+            {% endif %}
+            {% for trail in all_trails %}
+            {% if trail.public %}
+            <tr class="table-data">
+                <td class="table-title"><a href="{% url 'trail' trail.id %}">{{ trail.trail_name }}</a></td>
+                <td class="table-date">{{ trail.start_time|date:"d M Y" }}</td>
+                <td class="table-distance">{{ trail.distance }}</td>
+                <td class="table-ascent">{{ trail.sum_uphill|floatformat }}</td>
+                <td class="table-duration">{{ trail.duration|date:"H:i:s" }}</td>
+            </tr>
+            {% endif %}
+            {% endfor%}
+            </table>
+        </div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock%}

@@ -1,0 +1,14 @@
+{% extends "trail/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 class="mb-3 mt-3">Welcome to ShowYourTrails!</h2>
+    <h4 class="mb-5">Upload your gps trails and share with your friends!</h4>
+    <div class="mb-2"><a href="{% url 'explore' %}">Explore the trails by map.</a></div>
+    <div class="mb-2"><a href="{% url 'showtrails' %}">Show all trails upload by our users.</a></div>
+    <div><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a> to explore all features.</div>
+    <script>
+        document.querySelector('body').setAttribute('id', 'background-required')
+    </script>
+    {% endblock%}
+
