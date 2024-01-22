@@ -26,6 +26,10 @@ Once registered, users can begin exploring trails, saving their favorites, and c
 
     ![Trail Detail](img/trail_detail.png)
 
+- You can see the elevation, accumulating distance, and the specific point on the map when you hover over the elevation profile.
+
+    ![Trail Detail](img/elevation.gif)
+
 #### Explore Trails
 
 - Users can explore all the trails uploaded by the community, providing a diverse range of options for outdoor adventures.
